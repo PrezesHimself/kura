@@ -31,7 +31,7 @@ export const downalodSite = (domain: string) => {
     const myCrawler = new Crawler(initialUrl);
     myCrawler.decodeResponses = true;
     myCrawler.timeout = 5000;
-    myCrawler.maxDepth = 1;
+    // myCrawler.maxDepth = 1;
 
     const domain = url.parse(initialUrl).hostname;
 
