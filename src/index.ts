@@ -45,22 +45,19 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
     console.log('Whole thing took: ' + (new Date().getTime() - start));
 
     fs.writeFile(resultFileName, JSON.stringify(resultsMap), function () {});
-    const player = require('play-sound')();
-    player.play('./src/assets/we.mp3', function (err) {
-      if (err) throw err;
-      process.exit();
-    });
+    // const player = require('play-sound')();
+    // player.play('./src/assets/we.mp3', function (err) {
+    //   if (err) throw err;
+    //   process.exit();
+    // });
   });
   process.on('uncaughtException', function (err) {
     console.log('Caught exception: ' + err);
-    fs.writeFile(resultFileName, JSON.stringify(resultsMap), function () {});
   });
   process.on('exit', (code) => {
     console.log(`About to exit with code: ${code}`);
-    fs.writeFile(resultFileName, JSON.stringify(resultsMap), function () {});
   });
   process.on('sigint', (code) => {
     console.log(`About to exit with code: ${code}`);
-    fs.writeFile(resultFileName, JSON.stringify(resultsMap), function () {});
   });
 });

@@ -1,10 +1,1 @@
-http://www.bartnet.pl/
-http://prais.poznan.pl
-https://www.prais.pl/
-http://e-informatyk.com
-http://fibrain.pl/
-http://alfaelektro.com.pl
-http://artkomtel.pl/
-http://safecomp.com
-http://www.raxel.pl/
-http://snt.pl
+https://graplo.pl/
