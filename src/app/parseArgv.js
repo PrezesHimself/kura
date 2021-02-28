@@ -1,4 +1,7 @@
-exports.parseArgv = function (_a) {
+"use strict";
+exports.__esModule = true;
+exports.parseArgv = void 0;
+var parseArgv = function (_a) {
     var node = _a[0], file = _a[1], argv = _a.slice(2);
     var parsedArgs = {};
     argv.forEach(function (arg) {
@@ -6,6 +9,5 @@ exports.parseArgv = function (_a) {
         parsedArgs[key] = value;
     });
     return parsedArgs;
-    as;
-    T;
 };
+exports.parseArgv = parseArgv;

@@ -2,6 +2,7 @@ import * as url from 'url';
 import * as fs from 'fs';
 import * as path from 'path';
 import { log } from '../services/logger';
+import { savePage } from './savePage';
 const Crawler = require('simplecrawler');
 
 export const getFilePath = (queueItem, domain) => {
@@ -45,29 +46,13 @@ export const downalodSite = (domain: string) => {
       return true;
     });
 
-    myCrawler.on('fetchcomplete', function (
-      queueItem,
-      responseBuffer,
-      response
-    ) {
+    myCrawler.on('fetchcomplete', function (queueItem, responseBuffer) {
       if (queueItem.stateData.contentType === 'application/pdf') {
         return resolve('');
       }
       buffor.push(responseBuffer);
       const [filePath, dirName] = getFilePath(queueItem, domain);
-      log('DOWNLOADED: ' + filePath);
-      // Check if DIR exists
-      fs.exists(dirName, function (exists) {
-        // If DIR exists, write file
-        if (exists) {
-          fs.writeFile(filePath, responseBuffer, function () {});
-        } else {
-          // Else, recursively create dir using node-fs, then write file
-          fs.mkdir(dirName, function () {
-            fs.writeFile(filePath, responseBuffer, function () {});
-          });
-        }
-      });
+      savePage(dirName, filePath, responseBuffer);
     });
 
     myCrawler.on('complete', function () {
@@ -76,17 +61,14 @@ export const downalodSite = (domain: string) => {
 
     myCrawler.on('fetchclienterror', () => {
       log('FETCH_CLIENT_ERROR: ' + initialUrl);
-      resolve({ initialUrl, buffor: [''] });
     });
 
     myCrawler.on('fetcherror', () => {
       log('FETCH_ERROR: ' + initialUrl);
-      resolve({ initialUrl, buffor: [''] });
     });
 
     myCrawler.on('fetchtimeout', () => {
       log('FETCH_TIMEOUT: ' + initialUrl);
-      resolve({ initialUrl, buffor: [''] });
     });
 
     myCrawler.start();

@@ -1,11 +1,14 @@
-var readFile_1 = require('./readFile');
-var os = require('os');
-exports.prepareApp = function (appArgs) {
-    if (!appArgs || !appArgs.domains || !appArgs.keywords) {
-        throw new Error("There is something wrong with the parameters " + appArgs + "\n    use ex. node dist/index.js domains=domains.txt keywords=keywords.txt");
-    }
+"use strict";
+exports.__esModule = true;
+exports.prepareApp = void 0;
+var readFile_1 = require("./readFile");
+var os = require("os");
+var prepareApp = function (appArgs) {
     return new Promise(function (resolve, reject) {
-        Promise.all([readFile_1.readFile(appArgs.domains), readFile_1.readFile(appArgs.keywords)]).then(function (values) {
+        Promise.all([
+            readFile_1.readFile(appArgs.domains || 'domains.txt'),
+            readFile_1.readFile(appArgs.keywords || 'keywords.txt'),
+        ]).then(function (values) {
             console.log(values[0]);
             resolve({
                 domains: values[0].split(os.EOL),
@@ -14,3 +17,4 @@ exports.prepareApp = function (appArgs) {
         });
     });
 };
+exports.prepareApp = prepareApp;

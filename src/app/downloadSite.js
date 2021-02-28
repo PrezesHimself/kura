@@ -1,9 +1,12 @@
-var url = require('url');
-var fs = require('fs');
-var path = require('path');
-var logger_1 = require('../services/logger');
+"use strict";
+exports.__esModule = true;
+exports.downalodSite = exports.getFilePath = void 0;
+var url = require("url");
+var path = require("path");
+var logger_1 = require("../services/logger");
+var savePage_1 = require("./savePage");
 var Crawler = require('simplecrawler');
-exports.getFilePath = function (queueItem, domain) {
+var getFilePath = function (queueItem, domain) {
     // Parse url
     var parsed = url.parse(queueItem.url);
     // Rename / to index.html
@@ -18,7 +21,8 @@ exports.getFilePath = function (queueItem, domain) {
     // Path to save file
     return [filePath, dirName];
 };
-exports.downalodSite = function (domain) {
+exports.getFilePath = getFilePath;
+var downalodSite = function (domain) {
     var initialUrl = domain;
     return new Promise(function (resolve, reject) {
         var buffor = [];
@@ -36,42 +40,27 @@ exports.downalodSite = function (domain) {
             }
             return true;
         });
-        myCrawler.on('fetchcomplete', function (queueItem, responseBuffer, response) {
+        myCrawler.on('fetchcomplete', function (queueItem, responseBuffer) {
             if (queueItem.stateData.contentType === 'application/pdf') {
                 return resolve('');
             }
             buffor.push(responseBuffer);
             var _a = exports.getFilePath(queueItem, domain), filePath = _a[0], dirName = _a[1];
-            logger_1.log('DOWNLOADED: ' + filePath);
-            // Check if DIR exists
-            fs.exists(dirName, function (exists) {
-                // If DIR exists, write file
-                if (exists) {
-                    fs.writeFile(filePath, responseBuffer, function () { });
-                }
-                else {
-                    // Else, recursively create dir using node-fs, then write file
-                    fs.mkdir(dirName, function () {
-                        fs.writeFile(filePath, responseBuffer, function () { });
-                    });
-                }
-            });
+            savePage_1.savePage(dirName, filePath, responseBuffer);
         });
         myCrawler.on('complete', function () {
             resolve({ initialUrl: initialUrl, buffor: buffor });
         });
         myCrawler.on('fetchclienterror', function () {
             logger_1.log('FETCH_CLIENT_ERROR: ' + initialUrl);
-            resolve({ initialUrl: initialUrl, buffor: [''] });
         });
         myCrawler.on('fetcherror', function () {
             logger_1.log('FETCH_ERROR: ' + initialUrl);
-            resolve({ initialUrl: initialUrl, buffor: [''] });
         });
         myCrawler.on('fetchtimeout', function () {
             logger_1.log('FETCH_TIMEOUT: ' + initialUrl);
-            resolve({ initialUrl: initialUrl, buffor: [''] });
         });
         myCrawler.start();
     });
 };
+exports.downalodSite = downalodSite;
