@@ -23,7 +23,7 @@ prepareApp_1.prepareApp(parseArgv_1.parseArgv(process.argv)).then(function (conf
                 Object.keys(buffor).forEach(function (key) {
                     var keywordsResults = {};
                     config.keywords.forEach(function (keyword) {
-                        var match = buffor[key].match(new RegExp(keyword, 'gi'));
+                        var match = buffor[key].match(new RegExp('\b' + keyword, 'gi'));
                         keywordsResults[keyword] = match ? match.length : 0;
                     });
                     pages[key] = keywordsResults;
