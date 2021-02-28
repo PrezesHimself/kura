@@ -22,24 +22,39 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
   const start = new Date().getTime();
   const resultsMap = {};
   queue.enqueue(
-    config.domains.map((domain) => () =>
-      downalodSite(domain).then(({ initialUrl, buffor }) => {
-        const joinedBuffor = buffor.reduce((current, sum) => current + sum, '');
-        const keywordsResults = {};
-        config.keywords.forEach((keyword) => {
-          const match = joinedBuffor.match(new RegExp(keyword, 'gi'));
-          keywordsResults[keyword] = match ? match.length : 0;
+    config.domains.map((domain) => {
+      return () =>
+        downalodSite(domain).then(({ initialUrl, buffor }) => {
+          var pages = {};
+          Object.keys(buffor).forEach((key) => {
+            var keywordsResults = {};
+            config.keywords.forEach(function (keyword) {
+              var match = buffor[key].match(new RegExp(keyword, 'gi'));
+              keywordsResults[keyword] = match ? match.length : 0;
+            });
+            pages[key] = keywordsResults;
+          });
+
+          resultsMap[initialUrl] = { pages };
+
+          resultsMap[initialUrl]['total'] = Object.values(pages).reduce(
+            (sum, current) => {
+              Object.keys(current).forEach(
+                (key) => (sum[key] = (sum[key] || 0) + current[key])
+              );
+              return sum;
+            },
+            {}
+          );
+          process.stdout.write(
+            'Progress: ' +
+              Math.round(
+                (Object.values(resultsMap).length / config.domains.length) * 100
+              ) +
+              '%\r'
+          );
         });
-        resultsMap[initialUrl] = keywordsResults;
-        process.stdout.write(
-          'Progress: ' +
-            Math.round(
-              (Object.values(resultsMap).length / config.domains.length) * 100
-            ) +
-            '%\r'
-        );
-      })
-    )
+    })
   );
   queue.on('end', () => {
     console.log('Whole thing took: ' + (new Date().getTime() - start));
