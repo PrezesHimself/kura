@@ -29,7 +29,7 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
           Object.keys(buffor).forEach((key) => {
             var keywordsResults = {};
             config.keywords.forEach(function (keyword) {
-              var match = buffor[key].match(new RegExp(keyword, 'gi'));
+              var match = buffor[key].match(new RegExp('\b' + keyword, 'gi'));
               keywordsResults[keyword] = match ? match.length : 0;
             });
             pages[key] = keywordsResults;

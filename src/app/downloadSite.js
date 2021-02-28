@@ -19,15 +19,15 @@ var downalodSite = function (domain) {
         var domain = url.parse(initialUrl).hostname;
         myCrawler.interval = 250;
         myCrawler.maxConcurrency = 5;
-        myCrawler.addFetchCondition(function (queueItem) {
-            if (queueItem.path.match(/\.(css|jpg|pdf|docx|js|png|ico|xml|svg|mp3)/i)) {
-                logger_1.log('SKIPPED: ' + queueItem.path);
-                return false;
-            }
-            return true;
-        });
         myCrawler.addFetchCondition(function (queueItem, next, callback) {
             var _a = getFilePath_1.getFilePath(queueItem, domain), filePath = _a[0], dirName = _a[1];
+            if (queueItem.path.match(/\.(css|jpg|jpeg|pdf|docx|js|png|ico|xml|svg|mp3|gif|exe|swf|woff|eot|ttf)/i)) {
+                logger_1.log('SKIPPED: ' + queueItem.path);
+                return callback();
+            }
+            if (url.parse(queueItem.url).path === '/') {
+                return callback(null, true);
+            }
             fs.readFile(filePath, 'utf8', function (err, data) {
                 if (!err) {
                     if (!pathsVisited.includes(filePath)) {

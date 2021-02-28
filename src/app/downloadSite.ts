@@ -22,18 +22,20 @@ export const downalodSite = (domain: string) => {
     myCrawler.interval = 250;
     myCrawler.maxConcurrency = 5;
 
-    myCrawler.addFetchCondition((queueItem) => {
-      if (
-        queueItem.path.match(/\.(css|jpg|pdf|docx|js|png|ico|xml|svg|mp3)/i)
-      ) {
-        log('SKIPPED: ' + queueItem.path);
-        return false;
-      }
-      return true;
-    });
-
     myCrawler.addFetchCondition((queueItem, next, callback) => {
       const [filePath, dirName] = getFilePath(queueItem, domain);
+      if (
+        queueItem.path.match(
+          /\.(css|jpg|jpeg|pdf|docx|js|png|ico|xml|svg|mp3|gif|exe|swf|woff|eot|ttf)/i
+        )
+      ) {
+        log('SKIPPED: ' + queueItem.path);
+        return callback();
+      }
+
+      if (url.parse(queueItem.url).path === '/') {
+        return callback(null, true);
+      }
       fs.readFile(filePath, 'utf8', function (err, data) {
         if (!err) {
           if (!pathsVisited.includes(filePath)) {
