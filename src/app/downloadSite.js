@@ -52,7 +52,11 @@ var downalodSite = function (domain) {
             savePage_1.savePage(dirName, filePath, responseBuffer);
         });
         myCrawler.on('complete', function () {
-            resolve({ initialUrl: initialUrl, buffor: buffor });
+            var cb = this.wait();
+            setTimeout(function () {
+                cb();
+                resolve({ initialUrl: initialUrl, buffor: buffor });
+            }, 2000);
         });
         myCrawler.on('fetchclienterror', function () {
             logger_1.log('FETCH_CLIENT_ERROR: ' + initialUrl);

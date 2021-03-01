@@ -64,7 +64,11 @@ export const downalodSite = (domain: string) => {
     });
 
     myCrawler.on('complete', function () {
-      resolve({ initialUrl, buffor });
+      const cb = this.wait();
+      setTimeout(() => {
+        cb();
+        resolve({ initialUrl, buffor });
+      }, 2000);
     });
 
     myCrawler.on('fetchclienterror', () => {
