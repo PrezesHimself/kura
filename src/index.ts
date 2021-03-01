@@ -10,8 +10,10 @@ export interface AppArgs {
 }
 
 const startTime = new Date();
-const resultFileName = `results_${startTime.getTime()}.json`;
-
+const time_string = startTime.getTime();
+const result_dir = `results_${startTime.getTime()}`;
+const resultFileName = `${result_dir}/results.json`;
+fs.mkdir(result_dir, () => {});
 // there is something odd with the typings for queue-promise
 //@ts-ignore
 const queue = new Queue({
@@ -22,9 +24,12 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
   const start = new Date().getTime();
   const resultsMap = {};
   queue.enqueue(
-    config.domains.map((domain) => {
+    config.domains.map((domain, index) => {
       return () =>
-        downalodSite(domain).then(({ initialUrl, buffor }) => {
+        downalodSite(
+          domain,
+          Math.round((index / config.domains.length) * 100)
+        ).then(({ initialUrl, buffor }) => {
           var pages = {};
           Object.keys(buffor).forEach((key) => {
             var keywordsResults = {};
@@ -46,12 +51,10 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
             },
             {}
           );
-          process.stdout.write(
-            'Progress: ' +
-              Math.round(
-                (Object.values(resultsMap).length / config.domains.length) * 100
-              ) +
-              '%\r'
+          fs.writeFile(
+            `${result_dir}/${initialUrl.match(/http:\/\/(.*)/)[1]}.json`,
+            JSON.stringify(resultsMap[initialUrl]),
+            function () {}
           );
         });
     })
