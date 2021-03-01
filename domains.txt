@@ -24,5 +24,3 @@ http://provecta-it.pl/
 http://wikont.pl
 http://evercom.pl
 http://ex-el.pl
-http://comp.com.pl
-https://graplo.pl/
