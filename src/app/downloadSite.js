@@ -7,7 +7,13 @@ var logger_1 = require("../services/logger");
 var savePage_1 = require("./savePage");
 var getFilePath_1 = require("./getFilePath");
 var Crawler = require('simplecrawler');
-var downalodSite = function (domain) {
+var downalodSite = function (domain, percent) {
+    var count = 0;
+    var aminationMap = {
+        0: '/',
+        1: '-',
+        2: '\\'
+    };
     var initialUrl = domain;
     return new Promise(function (resolve, reject) {
         var buffor = {};
@@ -23,6 +29,7 @@ var downalodSite = function (domain) {
             var _a = getFilePath_1.getFilePath(queueItem, domain), filePath = _a[0], dirName = _a[1];
             if (queueItem.path.match(/\.(css|jpg|jpeg|pdf|docx|js|png|ico|xml|svg|mp3|gif|exe|swf|woff|eot|ttf)/i)) {
                 logger_1.log('SKIPPED: ' + queueItem.path);
+                process.stdout.write('Progress: ' + percent + '% ' + aminationMap[++count % 3] + ' \r');
                 return callback();
             }
             if (url.parse(queueItem.url).path === '/') {
@@ -33,7 +40,9 @@ var downalodSite = function (domain) {
                     if (!pathsVisited.includes(filePath)) {
                         pathsVisited.push(filePath);
                         logger_1.log('ALREADY_EXISTED: ' + filePath);
+                        process.stdout.write('Progress: ' + percent + '% ' + aminationMap[++count % 3] + ' \r');
                         buffor[queueItem.url] = data;
+                        // process.stdout.write(aminationMap[(++count % 3) + ''] + '\r');
                     }
                     return callback();
                 }

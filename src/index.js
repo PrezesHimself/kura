@@ -6,7 +6,10 @@ var downloadSite_1 = require("./app/downloadSite");
 var Queue = require("queue-promise");
 var fs = require("fs");
 var startTime = new Date();
-var resultFileName = "results_" + startTime.getTime() + ".json";
+var time_string = startTime.getTime();
+var result_dir = "results_" + startTime.getTime();
+var resultFileName = result_dir + "/results.json";
+fs.mkdir(result_dir, function () { });
 // there is something odd with the typings for queue-promise
 //@ts-ignore
 var queue = new Queue({
@@ -15,9 +18,9 @@ var queue = new Queue({
 prepareApp_1.prepareApp(parseArgv_1.parseArgv(process.argv)).then(function (config) {
     var start = new Date().getTime();
     var resultsMap = {};
-    queue.enqueue(config.domains.map(function (domain) {
+    queue.enqueue(config.domains.map(function (domain, index) {
         return function () {
-            return downloadSite_1.downalodSite(domain).then(function (_a) {
+            return downloadSite_1.downalodSite(domain, Math.round((index / config.domains.length) * 100)).then(function (_a) {
                 var initialUrl = _a.initialUrl, buffor = _a.buffor;
                 var pages = {};
                 Object.keys(buffor).forEach(function (key) {
@@ -33,9 +36,7 @@ prepareApp_1.prepareApp(parseArgv_1.parseArgv(process.argv)).then(function (conf
                     Object.keys(current).forEach(function (key) { return (sum[key] = (sum[key] || 0) + current[key]); });
                     return sum;
                 }, {});
-                process.stdout.write('Progress: ' +
-                    Math.round((Object.values(resultsMap).length / config.domains.length) * 100) +
-                    '%\r');
+                fs.writeFile(result_dir + "/" + initialUrl.match(/http:\/\/(.*)/)[1] + ".json", JSON.stringify(resultsMap[initialUrl]), function () { });
             });
         };
     }));

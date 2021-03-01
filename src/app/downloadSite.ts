@@ -6,7 +6,13 @@ import { savePage } from './savePage';
 import { getFilePath } from './getFilePath';
 const Crawler = require('simplecrawler');
 
-export const downalodSite = (domain: string) => {
+export const downalodSite = (domain: string, percent: number) => {
+  let count = 0;
+  const aminationMap = {
+    0: '/',
+    1: '-',
+    2: '\\',
+  };
   const initialUrl = domain;
 
   return new Promise((resolve, reject) => {
@@ -30,6 +36,9 @@ export const downalodSite = (domain: string) => {
         )
       ) {
         log('SKIPPED: ' + queueItem.path);
+        process.stdout.write(
+          'Progress: ' + percent + '% ' + aminationMap[++count % 3] + ' \r'
+        );
         return callback();
       }
 
@@ -41,7 +50,11 @@ export const downalodSite = (domain: string) => {
           if (!pathsVisited.includes(filePath)) {
             pathsVisited.push(filePath);
             log('ALREADY_EXISTED: ' + filePath);
+            process.stdout.write(
+              'Progress: ' + percent + '% ' + aminationMap[++count % 3] + ' \r'
+            );
             buffor[queueItem.url] = data;
+            // process.stdout.write(aminationMap[(++count % 3) + ''] + '\r');
           }
           return callback();
         }
