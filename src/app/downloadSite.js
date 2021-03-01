@@ -10,26 +10,26 @@ var Crawler = require('simplecrawler');
 var downalodSite = function (domain, percent) {
     var count = 0;
     var aminationMap = {
-        0: '/',
-        1: '-',
-        2: '\\'
+        0: '.  ',
+        1: '..  ',
+        2: '...',
+        3: '  '
     };
     var initialUrl = domain;
     return new Promise(function (resolve, reject) {
         var buffor = {};
         var pathsVisited = [];
-        var myCrawler = new Crawler(initialUrl);
-        myCrawler.decodeResponses = true;
-        myCrawler.timeout = 5000;
-        // myCrawler.maxDepth = 2;
+        var crawler = new Crawler(initialUrl);
+        crawler.decodeResponses = true;
+        crawler.timeout = 5000;
+        crawler.maxDepth = 2;
         var domain = url.parse(initialUrl).hostname;
-        myCrawler.interval = 250;
-        myCrawler.maxConcurrency = 5;
-        myCrawler.addFetchCondition(function (queueItem, next, callback) {
+        crawler.interval = 250;
+        crawler.maxConcurrency = 5;
+        crawler.addFetchCondition(function (queueItem, next, callback) {
             var _a = getFilePath_1.getFilePath(queueItem, domain), filePath = _a[0], dirName = _a[1];
             if (queueItem.path.match(/\.(css|jpg|jpeg|pdf|docx|js|png|ico|xml|svg|mp3|gif|exe|swf|woff|eot|ttf)/i)) {
                 logger_1.log('SKIPPED: ' + queueItem.path);
-                process.stdout.write('Progress: ' + percent + '% ' + aminationMap[++count % 3] + ' \r');
                 return callback();
             }
             if (url.parse(queueItem.url).path === '/') {
@@ -40,7 +40,6 @@ var downalodSite = function (domain, percent) {
                     if (!pathsVisited.includes(filePath)) {
                         pathsVisited.push(filePath);
                         logger_1.log('ALREADY_EXISTED: ' + filePath);
-                        process.stdout.write('Progress: ' + percent + '% ' + aminationMap[++count % 3] + ' \r');
                         buffor[queueItem.url] = data;
                         // process.stdout.write(aminationMap[(++count % 3) + ''] + '\r');
                     }
@@ -49,7 +48,7 @@ var downalodSite = function (domain, percent) {
                 return callback(null, true);
             });
         });
-        myCrawler.on('fetchcomplete', function (queueItem, responseBuffer) {
+        crawler.on('fetchcomplete', function (queueItem, responseBuffer) {
             if (queueItem.stateData.contentType === 'application/pdf' ||
                 pathsVisited.includes(queueItem.url)) {
                 return;
@@ -60,23 +59,27 @@ var downalodSite = function (domain, percent) {
             pathsVisited.push(queueItem.url);
             savePage_1.savePage(dirName, filePath, responseBuffer);
         });
-        myCrawler.on('complete', function () {
+        crawler.on('complete', function () {
+            clearInterval(interval);
             var cb = this.wait();
             setTimeout(function () {
                 cb();
                 resolve({ initialUrl: initialUrl, buffor: buffor });
             }, 2000);
         });
-        myCrawler.on('fetchclienterror', function () {
+        crawler.on('fetchclienterror', function () {
             logger_1.log('FETCH_CLIENT_ERROR: ' + initialUrl);
         });
-        myCrawler.on('fetcherror', function () {
+        crawler.on('fetcherror', function () {
             logger_1.log('FETCH_ERROR: ' + initialUrl);
         });
-        myCrawler.on('fetchtimeout', function () {
+        crawler.on('fetchtimeout', function () {
             logger_1.log('FETCH_TIMEOUT: ' + initialUrl);
         });
-        myCrawler.start();
+        crawler.start();
+        var interval = setInterval(function () {
+            process.stdout.write('Progress: ' + percent + '% ' + aminationMap[++count % 4] + ' \r');
+        }, 500);
     });
 };
 exports.downalodSite = downalodSite;

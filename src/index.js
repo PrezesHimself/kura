@@ -5,6 +5,7 @@ var prepareApp_1 = require("./app/prepareApp");
 var downloadSite_1 = require("./app/downloadSite");
 var Queue = require("queue-promise");
 var fs = require("fs");
+var logger_1 = require("./services/logger");
 var startTime = new Date();
 var time_string = startTime.getTime();
 var result_dir = "results_" + startTime.getTime();
@@ -36,7 +37,11 @@ prepareApp_1.prepareApp(parseArgv_1.parseArgv(process.argv)).then(function (conf
                     Object.keys(current).forEach(function (key) { return (sum[key] = (sum[key] || 0) + current[key]); });
                     return sum;
                 }, {});
-                fs.writeFile(result_dir + "/" + initialUrl.match(/http:\/\/(.*)/)[1] + ".json", JSON.stringify(resultsMap[initialUrl]), function () { });
+                var partial_file_name = result_dir + "/" + initialUrl.match(/.*\/\/([a-zA-Z0-9|\.|-]*)/)[1] + ".json";
+                logger_1.log('SAVING_FILE: ' + partial_file_name);
+                fs.writeFile(partial_file_name, JSON.stringify(resultsMap[initialUrl]), function () {
+                    logger_1.log('SAVING_FILE: ' + partial_file_name);
+                });
             });
         };
     }));

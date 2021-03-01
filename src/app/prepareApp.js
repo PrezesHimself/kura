@@ -9,7 +9,7 @@ var prepareApp = function (appArgs) {
             readFile_1.readFile(appArgs.domains || 'domains.txt'),
             readFile_1.readFile(appArgs.keywords || 'keywords.txt'),
         ]).then(function (values) {
-            console.log(values[0]);
+            // console.log(values[0]);
             resolve({
                 domains: values[0].split(os.EOL),
                 keywords: values[1].split(os.EOL)
