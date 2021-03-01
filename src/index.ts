@@ -3,6 +3,7 @@ import { prepareApp, PreparedArgs } from './app/prepareApp';
 import { downalodSite } from './app/downloadSite';
 import * as Queue from 'queue-promise';
 import * as fs from 'fs';
+import { log } from './services/logger';
 
 export interface AppArgs {
   domains: string;
@@ -51,10 +52,16 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
             },
             {}
           );
+          const partial_file_name = `${result_dir}/${
+            initialUrl.match(/.*\/\/([a-zA-Z0-9|\.|-]*)/)[1]
+          }.json`;
+          log('SAVING_FILE: ' + partial_file_name);
           fs.writeFile(
-            `${result_dir}/${initialUrl.match(/http:\/\/(.*)/)[1]}.json`,
+            partial_file_name,
             JSON.stringify(resultsMap[initialUrl]),
-            function () {}
+            function () {
+              log('SAVING_FILE: ' + partial_file_name);
+            }
           );
         });
     })

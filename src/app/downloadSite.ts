@@ -9,26 +9,27 @@ const Crawler = require('simplecrawler');
 export const downalodSite = (domain: string, percent: number) => {
   let count = 0;
   const aminationMap = {
-    0: '/',
-    1: '-',
-    2: '\\',
+    0: '.  ',
+    1: '..  ',
+    2: '...',
+    3: '  ',
   };
   const initialUrl = domain;
 
   return new Promise((resolve, reject) => {
     const buffor = {};
     const pathsVisited = [];
-    const myCrawler = new Crawler(initialUrl);
-    myCrawler.decodeResponses = true;
-    myCrawler.timeout = 5000;
-    // myCrawler.maxDepth = 2;
+    const crawler = new Crawler(initialUrl);
+    crawler.decodeResponses = true;
+    crawler.timeout = 5000;
+    crawler.maxDepth = 2;
 
     const domain = url.parse(initialUrl).hostname;
 
-    myCrawler.interval = 250;
-    myCrawler.maxConcurrency = 5;
+    crawler.interval = 250;
+    crawler.maxConcurrency = 5;
 
-    myCrawler.addFetchCondition((queueItem, next, callback) => {
+    crawler.addFetchCondition((queueItem, next, callback) => {
       const [filePath, dirName] = getFilePath(queueItem, domain);
       if (
         queueItem.path.match(
@@ -36,9 +37,6 @@ export const downalodSite = (domain: string, percent: number) => {
         )
       ) {
         log('SKIPPED: ' + queueItem.path);
-        process.stdout.write(
-          'Progress: ' + percent + '% ' + aminationMap[++count % 3] + ' \r'
-        );
         return callback();
       }
 
@@ -50,9 +48,7 @@ export const downalodSite = (domain: string, percent: number) => {
           if (!pathsVisited.includes(filePath)) {
             pathsVisited.push(filePath);
             log('ALREADY_EXISTED: ' + filePath);
-            process.stdout.write(
-              'Progress: ' + percent + '% ' + aminationMap[++count % 3] + ' \r'
-            );
+
             buffor[queueItem.url] = data;
             // process.stdout.write(aminationMap[(++count % 3) + ''] + '\r');
           }
@@ -62,7 +58,7 @@ export const downalodSite = (domain: string, percent: number) => {
       });
     });
 
-    myCrawler.on('fetchcomplete', function (queueItem, responseBuffer) {
+    crawler.on('fetchcomplete', function (queueItem, responseBuffer) {
       if (
         queueItem.stateData.contentType === 'application/pdf' ||
         pathsVisited.includes(queueItem.url)
@@ -76,7 +72,8 @@ export const downalodSite = (domain: string, percent: number) => {
       savePage(dirName, filePath, responseBuffer);
     });
 
-    myCrawler.on('complete', function () {
+    crawler.on('complete', function () {
+      clearInterval(interval);
       const cb = this.wait();
       setTimeout(() => {
         cb();
@@ -84,18 +81,23 @@ export const downalodSite = (domain: string, percent: number) => {
       }, 2000);
     });
 
-    myCrawler.on('fetchclienterror', () => {
+    crawler.on('fetchclienterror', () => {
       log('FETCH_CLIENT_ERROR: ' + initialUrl);
     });
 
-    myCrawler.on('fetcherror', () => {
+    crawler.on('fetcherror', () => {
       log('FETCH_ERROR: ' + initialUrl);
     });
 
-    myCrawler.on('fetchtimeout', () => {
+    crawler.on('fetchtimeout', () => {
       log('FETCH_TIMEOUT: ' + initialUrl);
     });
 
-    myCrawler.start();
+    crawler.start();
+    let interval = setInterval(() => {
+      process.stdout.write(
+        'Progress: ' + percent + '% ' + aminationMap[++count % 4] + ' \r'
+      );
+    }, 500);
   });
 };
