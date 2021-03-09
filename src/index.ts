@@ -63,6 +63,9 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
               log('SAVED_FILE: ' + partial_file_name);
             }
           );
+          fs.writeFile(resultFileName, JSON.stringify(resultsMap), function () {
+            log('SAVED_RESULTS');
+          });
         });
     })
   );
