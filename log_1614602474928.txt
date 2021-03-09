@@ -1,0 +1,2 @@
+2021.03.01, 12:41:15.0378 UTC -> SKIPPED: /sitemap_index.xml
+2021.03.01, 12:41:15.0480 UTC -> ALREADY_EXISTED: /Users/mateuszrorat/web/kura-crawler/download/atos.net/en/index.txt

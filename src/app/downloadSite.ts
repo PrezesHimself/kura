@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { log } from '../services/logger';
 import { savePage } from './savePage';
 import { getFilePath } from './getFilePath';
-const Crawler = require('simplecrawler');
+import { createCrawler } from './crawler/crawler';
 
 export const downalodSite = (domain: string, percent: number) => {
   let count = 0;
@@ -19,21 +19,15 @@ export const downalodSite = (domain: string, percent: number) => {
   return new Promise((resolve, reject) => {
     const buffor = {};
     const pathsVisited = [];
-    const crawler = new Crawler(initialUrl);
-    crawler.decodeResponses = true;
-    crawler.timeout = 5000;
-    crawler.maxDepth = 2;
 
     const domain = url.parse(initialUrl).hostname;
-
-    crawler.interval = 250;
-    crawler.maxConcurrency = 5;
+    const crawler = createCrawler(initialUrl);
 
     crawler.addFetchCondition((queueItem, next, callback) => {
       const [filePath, dirName] = getFilePath(queueItem, domain);
       if (
         queueItem.path.match(
-          /\.(css|jpg|jpeg|pdf|docx|js|png|ico|xml|svg|mp3|gif|exe|swf|woff|eot|ttf)/i
+          /\.(css|jpg|jpeg|pdf|docx|js|png|ico|xml|svg|mp3|mp4|gif|exe|swf|woff|eot|ttf)/i
         )
       ) {
         log('SKIPPED: ' + queueItem.path);

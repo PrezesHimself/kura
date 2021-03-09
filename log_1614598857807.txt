@@ -1,0 +1,16 @@
+2021.03.01, 11:40:58.0220 UTC -> DOWNLOADED: /Users/mateuszrorat/web/kura-crawler/download/www.bartnet.pl/index.html
+2021.03.01, 11:40:58.0225 UTC -> SKIPPED: /css/bootstrap.min.css
+2021.03.01, 11:40:58.0227 UTC -> SKIPPED: /Zapytanie%20_siec.pdf
+2021.03.01, 11:40:58.0227 UTC -> SKIPPED: /Zapytanie_ofertowe-%C5%82acze.pdf
+2021.03.01, 11:40:58.0228 UTC -> SKIPPED: /Zapytanie_ofertowe-switch.pdf
+2021.03.01, 11:40:58.0228 UTC -> SKIPPED: /Zapytanie_ofertowe-analiza.docx
+2021.03.01, 11:40:58.0226 UTC -> SKIPPED: /danar-logo-2048px.png
+2021.03.01, 11:40:58.0228 UTC -> SKIPPED: /js/bootstrap.min.js
+2021.03.01, 11:40:58.0228 UTC -> SKIPPED: /js/jquery.js
+2021.03.01, 11:40:58.0227 UTC -> SKIPPED: /Zapytanie_ofertowe-analiza.pdf
+2021.03.01, 11:40:58.0226 UTC -> SKIPPED: /css/stylish-portfolio.css
+2021.03.01, 11:41:03.0022 UTC -> SKIPPED: /sitemap_index.xml
+2021.03.01, 11:41:03.0561 UTC -> SKIPPED: /sitemap_index.xml
+2021.03.01, 11:41:03.0702 UTC -> ALREADY_EXISTED: /Users/mateuszrorat/web/kura-crawler/download/atos.net/en/index.txt
+2021.03.01, 11:41:06.0597 UTC -> DOWNLOADED: /Users/mateuszrorat/web/kura-crawler/download/e-informatyk.com/index.html
+2021.03.01, 11:41:06.0602 UTC -> ALREADY_EXISTED: /Users/mateuszrorat/web/kura-crawler/download/e-informatyk.com/index.html

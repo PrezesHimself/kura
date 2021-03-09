@@ -6,7 +6,7 @@ var fs = require("fs");
 var logger_1 = require("../services/logger");
 var savePage_1 = require("./savePage");
 var getFilePath_1 = require("./getFilePath");
-var Crawler = require('simplecrawler');
+var crawler_1 = require("./crawler/crawler");
 var downalodSite = function (domain, percent) {
     var count = 0;
     var aminationMap = {
@@ -19,16 +19,11 @@ var downalodSite = function (domain, percent) {
     return new Promise(function (resolve, reject) {
         var buffor = {};
         var pathsVisited = [];
-        var crawler = new Crawler(initialUrl);
-        crawler.decodeResponses = true;
-        crawler.timeout = 5000;
-        crawler.maxDepth = 2;
         var domain = url.parse(initialUrl).hostname;
-        crawler.interval = 250;
-        crawler.maxConcurrency = 5;
+        var crawler = crawler_1.createCrawler(initialUrl);
         crawler.addFetchCondition(function (queueItem, next, callback) {
             var _a = getFilePath_1.getFilePath(queueItem, domain), filePath = _a[0], dirName = _a[1];
-            if (queueItem.path.match(/\.(css|jpg|jpeg|pdf|docx|js|png|ico|xml|svg|mp3|gif|exe|swf|woff|eot|ttf)/i)) {
+            if (queueItem.path.match(/\.(css|jpg|jpeg|pdf|docx|js|png|ico|xml|svg|mp3|mp4|gif|exe|swf|woff|eot|ttf)/i)) {
                 logger_1.log('SKIPPED: ' + queueItem.path);
                 return callback();
             }
