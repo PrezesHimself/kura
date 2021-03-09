@@ -42,6 +42,9 @@ prepareApp_1.prepareApp(parseArgv_1.parseArgv(process.argv)).then(function (conf
                 fs.writeFile(partial_file_name, JSON.stringify(resultsMap[initialUrl]), function () {
                     logger_1.log('SAVED_FILE: ' + partial_file_name);
                 });
+                fs.writeFile(resultFileName, JSON.stringify(resultsMap), function () {
+                    logger_1.log('SAVED_RESULTS');
+                });
             });
         };
     }));
