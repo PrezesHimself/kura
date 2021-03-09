@@ -40,14 +40,16 @@ prepareApp_1.prepareApp(parseArgv_1.parseArgv(process.argv)).then(function (conf
                 var partial_file_name = result_dir + "/" + initialUrl.match(/.*\/\/([a-zA-Z0-9|\.|-]*)/)[1] + ".json";
                 logger_1.log('SAVING_FILE: ' + partial_file_name);
                 fs.writeFile(partial_file_name, JSON.stringify(resultsMap[initialUrl]), function () {
-                    logger_1.log('SAVING_FILE: ' + partial_file_name);
+                    logger_1.log('SAVED_FILE: ' + partial_file_name);
                 });
             });
         };
     }));
     queue.on('end', function () {
         console.log('Whole thing took: ' + (new Date().getTime() - start));
-        fs.writeFile(resultFileName, JSON.stringify(resultsMap), function () { });
+        fs.writeFile(resultFileName, JSON.stringify(resultsMap), function () {
+            process.exit(0);
+        });
         // const player = require('play-sound')();
         // player.play('./src/assets/we.mp3', function (err) {
         //   if (err) throw err;
