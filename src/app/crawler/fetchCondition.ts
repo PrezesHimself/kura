@@ -10,8 +10,5 @@ export const addFetchCondition = function (queueItem, next) {
     log('SKIPPED: ' + queueItem.path);
     return false;
   }
-  if (url.parse(queueItem.url).path === '/') {
-    return true;
-  }
   return true;
 };
