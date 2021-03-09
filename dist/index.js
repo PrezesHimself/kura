@@ -15064,6 +15064,54 @@ module.exports = FetchQueue;
 
 /***/ }),
 
+/***/ 2326:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+exports.__esModule = true;
+exports.createCrawler = void 0;
+var Crawler = __nccwpck_require__(9534);
+var fetchCondition_1 = __nccwpck_require__(2221);
+var createCrawler = function (initialUrl) {
+    var crawler = new Crawler(initialUrl);
+    crawler.decodeResponses = true;
+    crawler.timeout = 5000;
+    crawler.maxDepth = 2;
+    crawler.interval = 250;
+    crawler.maxConcurrency = 5;
+    crawler.ignoreWWWDomain = false;
+    crawler.scanSubdomains = true;
+    crawler.allowInitialDomainChange = true;
+    crawler.buffor = {};
+    crawler.addFetchCondition(fetchCondition_1.addFetchCondition.bind(crawler));
+    return crawler;
+};
+exports.createCrawler = createCrawler;
+
+
+/***/ }),
+
+/***/ 2221:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+exports.__esModule = true;
+exports.addFetchCondition = void 0;
+var logger_1 = __nccwpck_require__(8032);
+var addFetchCondition = function (queueItem, next) {
+    if (queueItem.path.match(/\.(css|jpg|jpeg|pdf|docx|js|png|ico|xml|svg|mp3|mp4|gif|exe|swf|woff|eot|ttf|ppt|pptx|doc|docx|ogv|dmg|webm|mov|bmp|apk|air|zip|rar|dot|axd|)/i)) {
+        logger_1.log('SKIPPED: ' + queueItem.path);
+        return false;
+    }
+    return true;
+};
+exports.addFetchCondition = addFetchCondition;
+
+
+/***/ }),
+
 /***/ 4075:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
@@ -15072,12 +15120,10 @@ var __webpack_unused_export__;
 
 __webpack_unused_export__ = true;
 exports.F = void 0;
-var url = __nccwpck_require__(8835);
-var fs = __nccwpck_require__(5747);
 var logger_1 = __nccwpck_require__(8032);
 var savePage_1 = __nccwpck_require__(5972);
 var getFilePath_1 = __nccwpck_require__(2845);
-var Crawler = __nccwpck_require__(9534);
+var crawler_1 = __nccwpck_require__(2326);
 var downalodSite = function (domain, percent) {
     var count = 0;
     var aminationMap = {
@@ -15088,56 +15134,26 @@ var downalodSite = function (domain, percent) {
     };
     var initialUrl = domain;
     return new Promise(function (resolve, reject) {
-        var buffor = {};
-        var pathsVisited = [];
-        var crawler = new Crawler(initialUrl);
-        crawler.decodeResponses = true;
-        crawler.timeout = 5000;
-        crawler.maxDepth = 2;
-        var domain = url.parse(initialUrl).hostname;
-        crawler.interval = 250;
-        crawler.maxConcurrency = 5;
-        crawler.addFetchCondition(function (queueItem, next, callback) {
-            var _a = getFilePath_1.getFilePath(queueItem, domain), filePath = _a[0], dirName = _a[1];
-            if (queueItem.path.match(/\.(css|jpg|jpeg|pdf|docx|js|png|ico|xml|svg|mp3|gif|exe|swf|woff|eot|ttf)/i)) {
-                logger_1.log('SKIPPED: ' + queueItem.path);
-                return callback();
-            }
-            if (url.parse(queueItem.url).path === '/') {
-                return callback(null, true);
-            }
-            fs.readFile(filePath, 'utf8', function (err, data) {
-                if (!err) {
-                    if (!pathsVisited.includes(filePath)) {
-                        pathsVisited.push(filePath);
-                        logger_1.log('ALREADY_EXISTED: ' + filePath);
-                        buffor[queueItem.url] = data;
-                        // process.stdout.write(aminationMap[(++count % 3) + ''] + '\r');
-                    }
-                    return callback();
-                }
-                return callback(null, true);
-            });
-        });
+        var crawler = crawler_1.createCrawler(initialUrl);
         crawler.on('fetchcomplete', function (queueItem, responseBuffer) {
-            if (queueItem.stateData.contentType === 'application/pdf' ||
-                pathsVisited.includes(queueItem.url)) {
+            if (queueItem.stateData.contentType === 'application/pdf') {
                 return;
             }
-            buffor[queueItem.url] = responseBuffer;
+            this.buffor[queueItem.url] = responseBuffer;
             var _a = getFilePath_1.getFilePath(queueItem, domain), filePath = _a[0], dirName = _a[1];
             logger_1.log('DOWNLOADED: ' + filePath);
-            pathsVisited.push(queueItem.url);
             savePage_1.savePage(dirName, filePath, responseBuffer);
-        });
+        }.bind(crawler));
         crawler.on('complete', function () {
+            var _this = this;
             clearInterval(interval);
             var cb = this.wait();
             setTimeout(function () {
                 cb();
-                resolve({ initialUrl: initialUrl, buffor: buffor });
+                resolve({ initialUrl: initialUrl, buffor: _this.buffor });
+                clearTimeout(crawlerTimeout);
             }, 2000);
-        });
+        }.bind(crawler));
         crawler.on('fetchclienterror', function () {
             logger_1.log('FETCH_CLIENT_ERROR: ' + initialUrl);
         });
@@ -15151,6 +15167,12 @@ var downalodSite = function (domain, percent) {
         var interval = setInterval(function () {
             process.stdout.write('Progress: ' + percent + '% ' + aminationMap[++count % 4] + ' \r');
         }, 500);
+        var crawlerTimeout = setTimeout(function () {
+            clearInterval(interval);
+            logger_1.log('CRAWLER_TIMEOUT: ' + initialUrl);
+            crawler.stop();
+            resolve({ initialUrl: initialUrl, buffor: this.buffor });
+        }.bind(crawler), 1000 * 60 * 30);
     });
 };
 exports.F = downalodSite;
@@ -15361,14 +15383,28 @@ var queue = new queue_promise__WEBPACK_IMPORTED_MODULE_3__({
                 var partial_file_name = result_dir + "/" + initialUrl.match(/.*\/\/([a-zA-Z0-9|\.|-]*)/)[1] + ".json";
                 (0,_services_logger__WEBPACK_IMPORTED_MODULE_5__.log)('SAVING_FILE: ' + partial_file_name);
                 fs__WEBPACK_IMPORTED_MODULE_4__.writeFile(partial_file_name, JSON.stringify(resultsMap[initialUrl]), function () {
-                    (0,_services_logger__WEBPACK_IMPORTED_MODULE_5__.log)('SAVING_FILE: ' + partial_file_name);
+                    (0,_services_logger__WEBPACK_IMPORTED_MODULE_5__.log)('SAVED_FILE: ' + partial_file_name);
+                });
+                fs__WEBPACK_IMPORTED_MODULE_4__.writeFile(resultFileName, JSON.stringify(resultsMap), function () {
+                    (0,_services_logger__WEBPACK_IMPORTED_MODULE_5__.log)('SAVED_RESULTS');
                 });
             });
         };
     }));
     queue.on('end', function () {
-        console.log('Whole thing took: ' + (new Date().getTime() - start));
-        fs__WEBPACK_IMPORTED_MODULE_4__.writeFile(resultFileName, JSON.stringify(resultsMap), function () { });
+        function msToTime(s) {
+            var ms = s % 1000;
+            s = (s - ms) / 1000;
+            var secs = s % 60;
+            s = (s - secs) / 60;
+            var mins = s % 60;
+            var hrs = (s - mins) / 60;
+            return hrs + 'h ' + mins + 'm ' + secs + 's';
+        }
+        console.log('Whole thing took: ' + msToTime(new Date().getTime() - start));
+        fs__WEBPACK_IMPORTED_MODULE_4__.writeFile(resultFileName, JSON.stringify(resultsMap), function () {
+            process.exit(0);
+        });
         // const player = require('play-sound')();
         // player.play('./src/assets/we.mp3', function (err) {
         //   if (err) throw err;
