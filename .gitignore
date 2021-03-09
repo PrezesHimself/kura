@@ -1,6 +1,6 @@
 download
 */download
-./*log*
+*log_*
 *result*
 node_modules
 src/**/*.js

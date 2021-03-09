@@ -60,7 +60,7 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
             partial_file_name,
             JSON.stringify(resultsMap[initialUrl]),
             function () {
-              log('SAVING_FILE: ' + partial_file_name);
+              log('SAVED_FILE: ' + partial_file_name);
             }
           );
         });
@@ -69,7 +69,9 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
   queue.on('end', () => {
     console.log('Whole thing took: ' + (new Date().getTime() - start));
 
-    fs.writeFile(resultFileName, JSON.stringify(resultsMap), function () {});
+    fs.writeFile(resultFileName, JSON.stringify(resultsMap), function () {
+      process.exit(0);
+    });
     // const player = require('play-sound')();
     // player.play('./src/assets/we.mp3', function (err) {
     //   if (err) throw err;
