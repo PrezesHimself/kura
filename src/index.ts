@@ -67,7 +67,17 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
     })
   );
   queue.on('end', () => {
-    console.log('Whole thing took: ' + (new Date().getTime() - start));
+    function msToTime(s) {
+      var ms = s % 1000;
+      s = (s - ms) / 1000;
+      var secs = s % 60;
+      s = (s - secs) / 60;
+      var mins = s % 60;
+      var hrs = (s - mins) / 60;
+
+      return hrs + 'h ' + mins + 'm ' + secs + 's';
+    }
+    console.log('Whole thing took: ' + msToTime(new Date().getTime() - start));
 
     fs.writeFile(resultFileName, JSON.stringify(resultsMap), function () {
       process.exit(0);
