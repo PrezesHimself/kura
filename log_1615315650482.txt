@@ -1,0 +1,13 @@
+2021.03.09, 18:47:31.0055 UTC -> DOWNLOADED: /Users/mateuszrorat/web/kura-crawler/download/www.bartnet.pl/index.html
+2021.03.09, 18:47:31.0063 UTC -> SKIPPED: /css/bootstrap.min.css
+2021.03.09, 18:47:31.0064 UTC -> SKIPPED: /danar-logo-2048px.png
+2021.03.09, 18:47:31.0063 UTC -> SKIPPED: /css/stylish-portfolio.css
+2021.03.09, 18:47:31.0064 UTC -> SKIPPED: /Zapytanie_ofertowe-analiza.pdf
+2021.03.09, 18:47:31.0064 UTC -> SKIPPED: /Zapytanie%20_siec.pdf
+2021.03.09, 18:47:31.0065 UTC -> SKIPPED: /Zapytanie_ofertowe-%C5%82acze.pdf
+2021.03.09, 18:47:31.0065 UTC -> SKIPPED: /Zapytanie_ofertowe-switch.pdf
+2021.03.09, 18:47:31.0066 UTC -> SKIPPED: /Zapytanie_ofertowe-analiza.docx
+2021.03.09, 18:47:31.0066 UTC -> SKIPPED: /js/jquery.js
+2021.03.09, 18:47:31.0066 UTC -> SKIPPED: /js/bootstrap.min.js
+2021.03.09, 18:47:33.0279 UTC -> SAVING_FILE: results_1615315650504/www.bartnet.pl.json
+2021.03.09, 18:47:33.0281 UTC -> SAVING_FILE: results_1615315650504/www.bartnet.pl.json
