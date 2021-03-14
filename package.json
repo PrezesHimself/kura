@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "compile": "tsc src/index.ts && node --inspect src/index.js",
+    "download": "tsc src/download.ts && node --inspect src/download.js",
+    "check": "tsc src/check.ts && node --inspect src/check.js",
     "dev": "./node_modules/nodemon/bin/nodemon.js --inspect -e ts  --exec \"npm run compile\""
   },
   "author": "",

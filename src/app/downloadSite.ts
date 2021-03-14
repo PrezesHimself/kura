@@ -1,5 +1,3 @@
-import * as url from 'url';
-
 import { log } from '../services/logger';
 import { savePage } from './savePage';
 import { getFilePath } from './getFilePath';
@@ -24,7 +22,6 @@ export const downalodSite = (domain: string, percent: number) => {
         if (queueItem.stateData.contentType === 'application/pdf') {
           return;
         }
-        this.buffor[queueItem.url] = responseBuffer;
         const [filePath, dirName] = getFilePath(queueItem, domain);
         log('DOWNLOADED: ' + filePath);
         savePage(dirName, filePath, responseBuffer);
@@ -38,7 +35,7 @@ export const downalodSite = (domain: string, percent: number) => {
         const cb = this.wait();
         setTimeout(() => {
           cb();
-          resolve({ initialUrl, buffor: this.buffor });
+          resolve({ initialUrl });
           clearTimeout(crawlerTimeout);
         }, 2000);
       }.bind(crawler)
@@ -68,7 +65,7 @@ export const downalodSite = (domain: string, percent: number) => {
         clearInterval(interval);
         log('CRAWLER_TIMEOUT: ' + initialUrl);
         crawler.stop();
-        resolve({ initialUrl, buffor: this.buffor });
+        resolve({ initialUrl });
       }.bind(crawler),
       1000 * 60 * 30
     );

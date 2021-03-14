@@ -4,5 +4,6 @@ download
 *result*
 node_modules
 src/**/*.js
+src/**/*.map
 .vscode
 ./results*

@@ -1,6 +1,6 @@
 import { readFile } from './readFile';
 import * as os from 'os';
-import { AppArgs } from '..';
+import { AppArgs } from '../download';
 
 export interface PreparedArgs {
   domains: string[];

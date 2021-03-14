@@ -12,8 +12,6 @@ export const createCrawler = (initialUrl) => {
   crawler.scanSubdomains = true;
   crawler.allowInitialDomainChange = true;
 
-  crawler.buffor = {};
-
   crawler.addFetchCondition(addFetchCondition.bind(crawler));
 
   return crawler;

@@ -20,18 +20,16 @@ var downalodSite = function (domain, percent) {
             if (queueItem.stateData.contentType === 'application/pdf') {
                 return;
             }
-            this.buffor[queueItem.url] = responseBuffer;
             var _a = getFilePath_1.getFilePath(queueItem, domain), filePath = _a[0], dirName = _a[1];
             logger_1.log('DOWNLOADED: ' + filePath);
             savePage_1.savePage(dirName, filePath, responseBuffer);
         }.bind(crawler));
         crawler.on('complete', function () {
-            var _this = this;
             clearInterval(interval);
             var cb = this.wait();
             setTimeout(function () {
                 cb();
-                resolve({ initialUrl: initialUrl, buffor: _this.buffor });
+                resolve({ initialUrl: initialUrl });
                 clearTimeout(crawlerTimeout);
             }, 2000);
         }.bind(crawler));
@@ -52,7 +50,7 @@ var downalodSite = function (domain, percent) {
             clearInterval(interval);
             logger_1.log('CRAWLER_TIMEOUT: ' + initialUrl);
             crawler.stop();
-            resolve({ initialUrl: initialUrl, buffor: this.buffor });
+            resolve({ initialUrl: initialUrl });
         }.bind(crawler), 1000 * 60 * 30);
     });
 };
