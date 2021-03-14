@@ -8,7 +8,7 @@ var readFile = function (filePath) {
             if (err) {
                 return reject(err);
             }
-            resolve(data);
+            resolve({ data: data, filePath: filePath });
         });
     });
 };

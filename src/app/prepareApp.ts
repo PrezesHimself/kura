@@ -15,8 +15,8 @@ export const prepareApp = (appArgs: AppArgs): Promise<PreparedArgs> => {
     ]).then(function (values) {
       // console.log(values[0]);
       resolve({
-        domains: values[0].split(os.EOL),
-        keywords: values[1].split(os.EOL),
+        domains: values[0].data.split(os.EOL),
+        keywords: values[1].data.split(os.EOL),
       });
     });
   });
