@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "download": "tsc src/download.ts && node rc/download.js",
+    "download": "tsc src/download.ts && node src/download.js",
     "check": "tsc src/check.ts && node src/check.js",
     "dev": "./node_modules/nodemon/bin/nodemon.js --inspect -e ts  --exec \"npm run compile\""
   },

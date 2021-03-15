@@ -23,8 +23,9 @@ export const downalodSite = (domain: string, percent: number) => {
           return;
         }
         const [filePath, dirName] = getFilePath(queueItem, domain);
-        log('DOWNLOADED: ' + filePath);
-        savePage(dirName, filePath, responseBuffer);
+        savePage(dirName, filePath, responseBuffer).then(() =>
+            log('DOWNLOADED: ' + filePath)
+        );
       }.bind(crawler)
     );
 

@@ -21,8 +21,9 @@ var downalodSite = function (domain, percent) {
                 return;
             }
             var _a = getFilePath_1.getFilePath(queueItem, domain), filePath = _a[0], dirName = _a[1];
-            logger_1.log('DOWNLOADED: ' + filePath);
-            savePage_1.savePage(dirName, filePath, responseBuffer);
+            savePage_1.savePage(dirName, filePath, responseBuffer).then(function () {
+                return logger_1.log('DOWNLOADED: ' + filePath);
+            });
         }.bind(crawler));
         crawler.on('complete', function () {
             clearInterval(interval);
