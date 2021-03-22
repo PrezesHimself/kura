@@ -73,7 +73,7 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
                       JSON.stringify(allResults),
                       function () {
                         log(
-                          'PARSED WHOLE' +
+                          'PARSED WHOLE ' +
                             dir +
                             ' and we are using: ' +
                             (Math.round(
