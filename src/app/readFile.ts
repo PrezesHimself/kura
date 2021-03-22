@@ -6,7 +6,7 @@ export const readFile = (
   return new Promise((resolve, reject) =>
     fs.readFile(filePath, 'utf8', function (err, data: string) {
       if (err) {
-        return reject(err);
+        return resolve({ data: null, filePath });
       }
       resolve({ data, filePath });
     })

@@ -34,7 +34,6 @@ const glob = require('glob');
 
 prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
   const start = new Date().getTime();
-  const resultMap = {};
   queue.enqueue(
     getDirectories('./download').map((dir, index) => {
       return () =>
@@ -51,7 +50,7 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
                 })
               )
             ).then((values) => {
-              resultMap[dir] = values.reduce((sum, current) => {
+              const resultMap = values.reduce((sum, current) => {
                 config.keywords.forEach((key) => {
                   //@ts-ignore
                   const match = (current.data as string).match(
@@ -64,15 +63,29 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
 
               fs.writeFile(
                 result_dir + '/' + dir + '.json',
-                JSON.stringify(resultMap[dir]),
+                JSON.stringify(resultMap),
                 function () {
-                  fs.writeFile(
-                    resultFileName,
-                    JSON.stringify(resultMap),
-                    function () {
-                      log('PARSED WHOLE' + dir + ' ');
-                    }
-                  );
+                  readFile(result_dir + '/results.json').then(({ data }) => {
+                    const allResults = data ? JSON.parse(data) : {};
+                    allResults[dir] = resultMap;
+                    fs.writeFile(
+                      resultFileName,
+                      JSON.stringify(allResults),
+                      function () {
+                        log(
+                          'PARSED WHOLE' +
+                            dir +
+                            ' and we are using: ' +
+                            (Math.round(
+                              process.memoryUsage().heapUsed / 1024 / 1024
+                            ) *
+                              100) /
+                              100 +
+                            ' MB of memory'
+                        );
+                      }
+                    );
+                  });
                 }
               );
               resolve(files);
@@ -89,9 +102,6 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
       s = (s - secs) / 60;
       var mins = s % 60;
       var hrs = (s - mins) / 60;
-      fs.writeFile(resultFileName, JSON.stringify(resultMap), function () {
-        log('SAVED_RESULTS');
-      });
       savePage;
       return hrs + 'h ' + mins + 'm ' + secs + 's';
     }
