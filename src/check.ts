@@ -65,27 +65,29 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
                 result_dir + '/' + dir + '.json',
                 JSON.stringify(resultMap),
                 function () {
-                  readFile(result_dir + '/results.json').then(({ data }) => {
-                    const allResults = data ? JSON.parse(data) : {};
-                    allResults[dir] = resultMap;
-                    fs.writeFile(
-                      resultFileName,
-                      JSON.stringify(allResults),
-                      function () {
-                        log(
-                          'PARSED WHOLE ' +
-                            dir +
-                            ' and we are using: ' +
-                            (Math.round(
-                              process.memoryUsage().heapUsed / 1024 / 1024
-                            ) *
-                              100) /
-                              100 +
-                            ' MB of memory'
-                        );
-                      }
-                    );
-                  });
+                  readFile(result_dir + '/results.json')
+                    .then(({ data }) => {
+                      const allResults = data ? JSON.parse(data) : {};
+                      allResults[dir] = resultMap;
+                      fs.writeFile(
+                        resultFileName,
+                        JSON.stringify(allResults),
+                        function () {
+                          log(
+                            'PARSED WHOLE ' +
+                              dir +
+                              ' and we are using: ' +
+                              (Math.round(
+                                process.memoryUsage().heapUsed / 1024 / 1024
+                              ) *
+                                100) /
+                                100 +
+                              ' MB of memory'
+                          );
+                        }
+                      );
+                    })
+                    .catch((err) => log('ERROR ' + err));
                 }
               );
               resolve(files);

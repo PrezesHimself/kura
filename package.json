@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "download": "tsc src/download.ts && node src/download.js",
-    "check": "tsc src/check.ts && node src/check.js",
+    "download": "tsc src/download.ts && node --max-old-space-size=3049 src/download.js",
+    "check": "tsc src/check.ts && node --max-old-space-size=3049 src/check.js",
     "dev": "./node_modules/nodemon/bin/nodemon.js --inspect -e ts  --exec \"npm run compile\""
   },
   "author": "",
