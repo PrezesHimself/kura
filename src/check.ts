@@ -1,14 +1,13 @@
-const { readdirSync } = require('fs');
-import * as fs from 'fs';
+const fs = require('fs');
 
 const getDirectories = (source) =>
-  readdirSync(source, { withFileTypes: true })
+  fs
+    .readdirSync(source, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name);
 
 import { parseArgv } from './app/parseArgv';
 import { prepareApp, PreparedArgs } from './app/prepareApp';
-import { downalodSite } from './app/downloadSite';
 import * as Queue from 'queue-promise';
 import { log } from './services/logger';
 import { readFile } from './app/readFile';
@@ -23,6 +22,8 @@ const startTime = new Date();
 const time_string = startTime.getTime();
 const result_dir = `results_${startTime.getTime()}`;
 const resultFileName = `${result_dir}/results.json`;
+const stream = fs.createWriteStream(resultFileName, { flags: 'w' });
+stream.write('{');
 fs.mkdir(result_dir, () => {});
 
 // there is something odd with the typings for queue-promise
@@ -65,32 +66,25 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
                 result_dir + '/' + dir + '.json',
                 JSON.stringify(resultMap),
                 function () {
-                  readFile(result_dir + '/results.json')
-                    .then(({ data }) => {
-                      const allResults = data ? JSON.parse(data) : {};
-                      allResults[dir] = resultMap;
-                      fs.writeFile(
-                        resultFileName,
-                        JSON.stringify(allResults),
-                        function () {
-                          log(
-                            'PARSED WHOLE ' +
-                              dir +
-                              ' and we are using: ' +
-                              (Math.round(
-                                process.memoryUsage().heapUsed / 1024 / 1024
-                              ) *
-                                100) /
-                                100 +
-                              ' MB of memory'
-                          );
-                        }
+                  stream.write(
+                    `"${dir}" : ${JSON.stringify(resultMap)},`,
+                    () => {
+                      resolve(files);
+                      log(
+                        'PARSED WHOLE ' +
+                          dir +
+                          ' and we are using: ' +
+                          (Math.round(
+                            process.memoryUsage().heapUsed / 1024 / 1024
+                          ) *
+                            100) /
+                            100 +
+                          ' MB of memory'
                       );
-                    })
-                    .catch((err) => log('ERROR ' + err));
+                    }
+                  ); //<-- the place to test
                 }
               );
-              resolve(files);
             });
           });
         });
@@ -107,6 +101,7 @@ prepareApp(parseArgv<AppArgs>(process.argv)).then((config: PreparedArgs) => {
       savePage;
       return hrs + 'h ' + mins + 'm ' + secs + 's';
     }
+    stream.write(`"totalTime": "${msToTime(new Date().getTime() - start)}"}`);
     console.log('Whole thing took: ' + msToTime(new Date().getTime() - start));
   });
   process.on('uncaughtException', function (err) {
