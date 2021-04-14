@@ -22,9 +22,10 @@ const startTime = new Date();
 const time_string = startTime.getTime();
 const result_dir = `results_${startTime.getTime()}`;
 const resultFileName = `${result_dir}/results.json`;
+
+fs.mkdir(result_dir, () => {});
 const stream = fs.createWriteStream(resultFileName, { flags: 'w' });
 stream.write('{');
-fs.mkdir(result_dir, () => {});
 
 // there is something odd with the typings for queue-promise
 //@ts-ignore
